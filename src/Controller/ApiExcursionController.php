@@ -24,11 +24,41 @@ class ApiExcursionController extends AbstractController
     /**
      * @Route("/allexcursionapi", name="api_excursion")
      */
-    public function index(ExcursionRepository $excursionRepository,SerializerInterface $serializer): Response
+    public function index()
     {
-        $excursions = $excursionRepository->findAll();
-        $json = $serializer->serialize($excursions,'json',['groups'=>'excursion']);
-        return new Response($json);
+        $array1=[];
+        $excursions = $this->getDoctrine()->getManager()->getRepository(Excursion::class)->findAll();
+        foreach ($excursions as $key => $value) {
+            if ($value->getExcursionimages()[0]) {
+                $array["image"] = "http://127.0.0.1:8000/uploads/images/excursion/".$value->getExcursionimages()[0]->getImageName();
+            } else {
+                $array["image"] = "http://localhost:8000/front-office/images/bg_4.jpg";
+            }
+            $array["id"] = $value->getId();
+            $array["libelle"] = $value->getLibelle();
+            $array["description"] = $value->getDescription();
+            $array["programme"] = $value->getProgramme();
+            $array["ville"] = $value->getVille();
+            $array["prix"] = $value->getPrix();
+            $array["duration"] = $value->getDuration();
+            $array["localisation"] = $value->getLocalisation();
+            $array["excursioncategorie_id"] = 0;
+            $array1[]=$array;
+        }
+        // $serializer = new Serializer([new ObjectNormalizer()]);
+        // $formatted = $serializer->normalize($excursions);
+
+        // return new JsonResponse($formatted);
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setCircularReferenceLimit(2);
+// Add Circular reference handler
+        $normalizer->setCircularReferenceHandler(function ($object) {
+            return $object->getId();
+        });
+        $normalizers = array($normalizer);
+        $serializer = new Serializer($normalizers);
+        $formatted = $serializer->normalize($array1);
+        return new JsonResponse($formatted);
     }
 //    /**
 //     * @Route("/api/excursion/new", name="api_excursion_new")
