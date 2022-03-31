@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\ExcursioncommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 
 /**
@@ -20,41 +22,48 @@ class Excursioncomment
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("excursion")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(message="Ce champ est obligatoire")
+     * @Groups("excursion")
      */
     private $pseudo;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(message="Ce champ est obligatoire")
+     * @Groups("excursion")
      */
     private $email;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank(message="Ce champ est obligatoire")
+     * @Groups("excursion")
      */
     private $contenu;
 
     /**
      *  @ORM\Column(type="boolean")
      * @Assert\NotBlank(message="Ce champ est obligatoire")
+     * @Groups("excursion")
      */
     private $actif;
 
     /**
      * @ORM\Column(type="boolean")
      * @Assert\NotBlank(message="Ce champ est obligatoire")
+     * @Groups("excursion")
      */
     private $rgpd;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups("excursion")
      */
     private $created_at;
 

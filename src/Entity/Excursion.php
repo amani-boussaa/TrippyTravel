@@ -93,7 +93,8 @@ class Excursion
     private $excursionreservations;
 
     /**
-     * @ORM\OneToMany(targetEntity=Excursioncomment::class, mappedBy="excursion")
+     * @ORM\OneToMany(targetEntity=Excursioncomment::class, mappedBy="excursion", cascade={"persist", "remove"})
+     * @Groups("excursion")
      */
     private $excursioncomments;
 
@@ -106,6 +107,7 @@ class Excursion
     {
         $this->excursionimages = new ArrayCollection();
         $this->excursionreservations = new ArrayCollection();
+        $this->excursioncomments = new ArrayCollection();
     }
 
     public function getId(): ?int
