@@ -24,11 +24,37 @@ class ApiArticleController extends AbstractController
     /**
      * @Route("/api/article", name="api_article")
      */
-    public function index(ArticleRepository $articleRepository,SerializerInterface $serializer): Response
+    // public function index(ArticleRepository $articleRepository,SerializerInterface $serializer): Response
+    public function index()
     {
-        $articles = $articleRepository->findAll();
-        $json = $serializer->serialize($articles,'json',['groups'=>'article']);
-        return new Response($json);
+        $array1=[];
+        $articles = $this->getDoctrine()->getManager()->getRepository(Article::class)->findAll();
+        foreach ($articles as $key => $value) {
+            if ($value->getImages()[0]) {
+                $array["image"] = "http://127.0.0.1:8000/uploads/".$value->getImages()[0]->getName();
+            } else {
+                $array["image"] = "http://localhost:8000/front-office/images/bg_4.jpg";
+            }
+            $array["id"] = $value->getId();
+            $array["title"] = $value->getTitle();
+            $array["content"] = $value->getContent();
+            $array["id_category"] = 0;
+            $array1[]=$array;
+        }
+    
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setCircularReferenceLimit(2);
+// Add Circular reference handler
+        $normalizer->setCircularReferenceHandler(function ($object) {
+            return $object->getId();
+        });
+        $normalizers = array($normalizer);
+        $serializer = new Serializer($normalizers);
+        $formatted = $serializer->normalize($array1);
+        return new JsonResponse($formatted);
+        // $articles = $articleRepository->findAll();
+        // $json = $serializer->serialize($articles,'json',['groups'=>'article']);
+        // return new Response($json);
     }
 
     /******************Detail Article*****************************************/
