@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
@@ -20,12 +20,14 @@ class Article
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("article")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank(message="The title is required !")
+     * @Groups("article")
      */
     private $title;
 
@@ -35,33 +37,39 @@ class Article
      *      min = 50,
      *      minMessage = "Your content is too short: {{ limit }} caraters needed ",
      *     )
+     * @Groups("article")
      */
 
     private $content;
 
     /**
      * @ORM\Column(type="datetime_immutable")
+     * @Groups("article")
      */
     private $CreatedAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("article")
      */
     private $id_category;
 
     /**
      * @ORM\OneToMany(targetEntity=Articlimages::class, mappedBy="article",cascade={"persist", "remove"})
+     * @Groups("article")
      */
     private $images;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups("article")
      */
     private $views;
 
     /**
      * @ORM\OneToMany(targetEntity=Comments::class, mappedBy="annonces", orphanRemoval=true)
+     * @Groups("article")
      */
     private $comments;
 
