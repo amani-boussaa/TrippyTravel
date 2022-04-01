@@ -47,10 +47,7 @@ class ApiExcursionController extends AbstractController
             $array["excursioncategorie_id"] = 0;
             $array1[]=$array;
         }
-        // $serializer = new Serializer([new ObjectNormalizer()]);
-        // $formatted = $serializer->normalize($excursions);
-
-        // return new JsonResponse($formatted);
+    
         $normalizer = new ObjectNormalizer();
         $normalizer->setCircularReferenceLimit(2);
 // Add Circular reference handler
