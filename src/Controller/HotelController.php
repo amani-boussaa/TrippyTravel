@@ -93,7 +93,7 @@ class HotelController extends AbstractController
 
      /******************Modifier Hotel*****************************************/
     /**
-     * @Route("/updateHotel", name="update_Hotel")
+     * @Route("/updateHotel")
      * @Method("PUT")
      */
     public function modifierHotel(Request $request) {

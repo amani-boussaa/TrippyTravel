@@ -164,7 +164,7 @@ class ApiExcursionController extends AbstractController
 
     /******************Modifier Excursion*****************************************/
     /**
-     * @Route("/updateExcursionapi", name="update_excursionapi")
+     * @Route("/updateExcursionapi")
      * @Method("PUT")
      */
     public function modifierExcursionAction(Request $request) {
