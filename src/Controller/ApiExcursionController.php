@@ -34,6 +34,7 @@ class ApiExcursionController extends AbstractController
             } else {
                 $array["image"] = "http://localhost:8000/front-office/images/bg_4.jpg";
             }
+          
             $array["id"] = $value->getId();
             $array["libelle"] = $value->getLibelle();
             $array["description"] = $value->getDescription();
@@ -42,6 +43,7 @@ class ApiExcursionController extends AbstractController
             $array["prix"] = $value->getPrix();
             $array["duration"] = $value->getDuration();
             $array["localisation"] = $value->getLocalisation();
+            $array["comments"] = $value->getExcursioncomments();
             $array["excursioncategorie_id"] = 0;
             $array1[]=$array;
         }
