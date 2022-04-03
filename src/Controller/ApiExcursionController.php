@@ -167,6 +167,7 @@ class ApiExcursionController extends AbstractController
      * @Route("/updateExcursionapi")
      * @Method("PUT")
      */
+    
     public function modifierExcursionAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $excursion = $this->getDoctrine()->getManager()
