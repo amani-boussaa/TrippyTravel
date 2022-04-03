@@ -77,7 +77,7 @@ class ApiExcursionController extends AbstractController
     /******************Detail Excursion*****************************************/
 
     /**
-     * @Route("/detailExcursionapi", name="detail_excursion")
+     * @Route("/detailExcursionapi")
      * @Method("GET")
      */
 
@@ -167,7 +167,7 @@ class ApiExcursionController extends AbstractController
      * @Route("/updateExcursionapi")
      * @Method("PUT")
      */
-    
+
     public function modifierExcursionAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $excursion = $this->getDoctrine()->getManager()
