@@ -80,26 +80,7 @@ class ApiMaisonshotesController extends AbstractController
         $formatted = $serializer->normalize($maisonshote);
         return new JsonResponse($formatted);
     }
-    /**
-     * @Route("/detailMaisonapi", name="detail_excursion")
-     * @Method("GET")
-     */
-
-    //Detail Maison
-    public function detailMaisonsAction(Request $request)
-    {
-        $id = $request->get("id");
-        $em = $this->getDoctrine()->getManager();
-        $maisonshote = $em->getRepository(Maisonshotes::class)->find($id);
-        $encoder = new JsonEncoder();
-        $normalizer = new ObjectNormalizer();
-        $normalizer->setCircularReferenceHandler(function ($object) {
-            return $object->getLibelle();
-        });
-        $serializer = new Serializer([$normalizer], [$encoder]);
-        $formatted = $serializer->normalize($maisonshote);
-        return new JsonResponse($formatted);
-    }
+   
     /**
      * @Route("/deleteMaisonshotesapi", name="delete_Maisonshotesapi")
      * @Method("DELETE")
@@ -124,7 +105,7 @@ class ApiMaisonshotesController extends AbstractController
 
     }
     /**
-     * @Route("/updateMaisonapi", name="update_excursionapi")
+     * @Route("/updateMaisonapi")
      * @Method("PUT")
      */
     public function modifierMaisonsAction(Request $request) {
