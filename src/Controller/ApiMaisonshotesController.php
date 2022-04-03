@@ -114,6 +114,7 @@ class ApiMaisonshotesController extends AbstractController
             ->getRepository(Maisonshotes::class)
             ->find($request->get("id"));
 
+        $maisonshote->setLibelle($request->get("libelle"));
         $maisonshote->setCapacite($request->get("capacite"));
         $maisonshote->setLocalisation($request->get("localisation"));
 
