@@ -14,6 +14,16 @@ use Knp\Component\Pager\PaginatorInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
+use App\Entity\Reclamation;
+
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Validator\Constraints\Json;
+
 use App\Notifications\NouveauhotelNotification;
 use Symfony\Component\Form\Extension\Core\Type\{TextType,ButtonType,EmailType,HiddenType,PasswordType,TextareaType,SubmitType,NumberType,DateType,MoneyType,BirthdayType};
 
@@ -21,8 +31,140 @@ class HotelController extends AbstractController
 {
 
 
-    
+   
+
+  /******************Ajouter Hotel*****************************************/
+     /**
+      * @Route("/addHotel", name="add_Hotel")
+      * @Method("POST")
+      */
+
+      public function ajouterHotelm(Request $request)
+      {
+          $hotel = new Hotel();
+          $libelle = $request->query->get("libelle");
+          $localisation = $request->query->get("localisation");
+          $nbetoile = $request->query->get("nbetoile");
+          $nbchdispo = $request->query->get("nbchdispo");
+          $description_hotel = $request->query->get("description_hotel");
+          
+          $em = $this->getDoctrine()->getManager();
+          
+ 
+          $hotel->setLibelle($libelle);
+          $hotel->setLocalisation($localisation);
+          $hotel->setNbetoile($nbetoile);
+          $hotel->setNbchdispo($nbchdispo);
+          $hotel->setDescriptionHotel($description_hotel);
+ 
+          $em->persist($hotel);
+          $em->flush();
+          $serializer = new Serializer([new ObjectNormalizer()]);
+          $formatted = $serializer->normalize($hotel);
+          return new JsonResponse($formatted);
+ 
+      }
+ 
+       /******************Supprimer Hotel*****************************************/
+
+     /**
+      * @Route("/deleteHotel", name="delete_Hotel")
+      * @Method("DELETE")
+      */
+
+     public function deleteHotel(Request $request) {
+        $id = $request->get("id");
+
+        $em = $this->getDoctrine()->getManager();
+        $hotel = $em->getRepository(Hotel::class)->find($id);
+        if($hotel!=null ) {
+            $em->remove($hotel);
+            $em->flush();
+
+            $serialize = new Serializer([new ObjectNormalizer()]);
+            $formatted = $serialize->normalize("hotel a ete supprimee avec success.");
+            return new JsonResponse($formatted);
+
+        }
+        return new JsonResponse("id hotel invalide.");
+
+
+    }
+
+     /******************Modifier Hotel*****************************************/
+    /**
+     * @Route("/updateHotel")
+     * @Method("PUT")
+     */
+    public function modifierHotel(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $hotel = $this->getDoctrine()->getManager()
+                        ->getRepository(Hotel::class)
+                        ->find($request->get("id"));
+
+        $hotel->setLibelle($request->get("libelle"));
+        $hotel->setLocalisation($request->get("localisation"));
+        $hotel->setNbetoile($request->get("nbetoile"));
+        $hotel->setNbchdispo($request->get("nbchdispo"));
+        $hotel->setDescriptionHotel($request->get("description_hotel"));
+
+        
+
+        $em->persist($hotel);
+        $em->flush();
+        $serializer = new Serializer([new ObjectNormalizer()]);
+        $formatted = $serializer->normalize($hotel);
+        return new JsonResponse("hotel a ete modifiee avec success.");
+
+    }
+
+       /******************affichage Hotel*****************************************/
+
+     /**
+      * @Route("/displayHotel", name="display_Hotel")
+      */
+      public function allRecAction()
+      {
+ 
+          $hotel = $this->getDoctrine()->getManager()->getRepository(Hotel::class)->findAll();
+          $normalizer = new ObjectNormalizer();
+        $normalizer->setCircularReferenceLimit(2);
+// Add Circular reference handler
+        $normalizer->setCircularReferenceHandler(function ($object) {
+            return $object->getId();
+        });
+        $normalizers = array($normalizer);
+        $serializer = new Serializer($normalizers);
+        $formatted = $serializer->normalize($hotel);
+        return new JsonResponse($formatted);
+ 
+      }
      
+        /******************Detail Hotel*****************************************/
+
+     /**
+      * @Route("/detailHotel", name="detail_Hotel")
+      * @Method("GET")
+      */
+
+     //Detail Hotel
+     public function detailHotel(Request $request)
+     {
+         $id = $request->get("id");
+
+         $em = $this->getDoctrine()->getManager();
+         $hotel = $this->getDoctrine()->getManager()->getRepository(Hotel::class)->find($id);
+         $encoder = new JsonEncoder();
+         $normalizer = new ObjectNormalizer();
+         $normalizer->setCircularReferenceHandler(function ($Libelle) {
+             return $object->getDescription();
+         });
+         $serializer = new Serializer([$normalizer], [$encoder]);
+         $formatted = $serializer->normalize($hotel);
+         return new JsonResponse($formatted);
+     }
+
+
       /**
      * @Route("/hotel", name="hotel", methods={"GET","POST"})
      */
@@ -347,9 +489,6 @@ public function __construct(NouveauhotelNotification $notify_creation)
 
 
 
-
-
- 
 
 
 }

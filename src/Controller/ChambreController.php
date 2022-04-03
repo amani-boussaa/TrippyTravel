@@ -14,10 +14,149 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Validator\Constraints\Json;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ChambreController extends AbstractController
 {
+
+
+     /******************Ajouter Chambre*****************************************/
+     /**
+      * @Route("/addChambre", name="add_Chambre")
+      * @Method("POST")
+      */
+
+      public function ajouterChambrem(Request $request)
+      {
+          $chambre = new Chambre();
+          $typechambre = $request->query->get("typechambre");
+          $prix = $request->query->get("prix");
+          $description_chambre = $request->query->get("description_chambre");
+          $hotel = $request->query->get("hotel");
+
+          
+          $em = $this->getDoctrine()->getManager();
+          
+ 
+          $chambre->setTypechambre($typechambre);
+          $chambre->setPrix($prix);
+          $chambre->setDescriptionChambre($description_chambre);
+          $chambre->setHotel($hotel);
+         
+          $em->persist($chambre);
+          $em->flush();
+          $serializer = new Serializer([new ObjectNormalizer()]);
+          $formatted = $serializer->normalize($chambre);
+          return new JsonResponse($formatted);
+ 
+      }
+ 
+       /******************Supprimer Chambre*****************************************/
+
+     /**
+      * @Route("/deleteChambre", name="delete_Chambre")
+      * @Method("DELETE")
+      */
+
+     public function deleteChambre(Request $request) {
+        $id = $request->get("id");
+
+        $em = $this->getDoctrine()->getManager();
+        $chambre = $em->getRepository(Chambre::class)->find($id);
+        if($chambre!=null ) {
+            $em->remove($chambre);
+            $em->flush();
+
+            $serialize = new Serializer([new ObjectNormalizer()]);
+            $formatted = $serialize->normalize("Chambre a ete supprimee avec success.");
+            return new JsonResponse($formatted);
+
+        }
+        return new JsonResponse("id Chambre invalide.");
+
+
+    }
+
+     /******************Modifier Chambre*****************************************/
+    /**
+     * @Route("/updateChambre", name="update_Chambre")
+     * @Method("PUT")
+     */
+    public function modifierChambre(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $chambre = $this->getDoctrine()->getManager()
+                        ->getRepository(Chambre::class)
+                        ->find($request->get("id"));
+
+        $chambre->setTypechambre($request->get("typechambre"));
+        $chambre->setPrix($request->get("prix"));
+        $chambre->setDescriptionChambre($request->get("description_chambre"));
+        $chambre->setHotel($request->get("hotel"));
+        
+        
+        
+
+        $em->persist($chambre);
+        $em->flush();
+        $serializer = new Serializer([new ObjectNormalizer()]);
+        $formatted = $serializer->normalize($chambre);
+        return new JsonResponse("Chambre a ete modifiee avec success.");
+
+    }
+
+       /******************affichage Chambre*****************************************/
+
+     /**
+      * @Route("/displayChambre", name="display_Chambre")
+      */
+      public function allRecAction()
+      {
+ 
+          $chambre = $this->getDoctrine()->getManager()->getRepository(Chambre::class)->findAll();
+          $normalizer = new ObjectNormalizer();
+          $normalizer->setCircularReferenceLimit(2);
+  // Add Circular reference handler
+          $normalizer->setCircularReferenceHandler(function ($object) {
+              return $object->getId();
+          });
+          $normalizers = array($normalizer);
+          $serializer = new Serializer($normalizers);
+          $formatted = $serializer->normalize($chambre);
+          return new JsonResponse($formatted);
+ 
+      }
+     
+        /******************Detail Chambre*****************************************/
+
+     /**
+      * @Route("/detailChambre", name="detail_Chambre")
+      * @Method("GET")
+      */
+
+     //Detail Chambre
+     public function detailChambre(Request $request)
+     {
+         $id = $request->get("id");
+
+         $em = $this->getDoctrine()->getManager();
+         $chambre = $this->getDoctrine()->getManager()->getRepository(Chambre::class)->find($id);
+         $encoder = new JsonEncoder();
+         $normalizer = new ObjectNormalizer();
+         $normalizer->setCircularReferenceHandler(function ($typechambre) {
+             return $object->getDescription();
+         });
+         $serializer = new Serializer([$normalizer], [$encoder]);
+         $formatted = $serializer->normalize($chambre);
+         return new JsonResponse($formatted);
+     }
+
+
+
     /**
      * @Route("/hotel_single", name="hotel_single")
      */
